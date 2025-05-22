@@ -1,10 +1,8 @@
 package view;
 
-import business.CustomerManagement;
+import business.RoomManagement;
 import common.tools.DataInput;
-import core.interfaces.ICustomer;
-import core.interfaces.IFeast;
-import core.interfaces.IOrder;
+import core.interfaces.IRoom;
 import java.util.Arrays;
 import java.util.List;
 
@@ -31,8 +29,8 @@ public class Menu {
         return number;
     }
 
-    public static void manageStudent(ICustomer service, IFeast feastService, IOrder orderService) {
-        CustomerManagement customerMenu = new CustomerManagement(service, feastService, orderService);
-        customerMenu.processMenu();
+    public static void manageRoom(IRoom service) {
+        RoomManagement roomMenu = new RoomManagement(service);
+        roomMenu.processMenu();
     }
 }

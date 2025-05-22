@@ -1,5 +1,8 @@
 package core.entities;
 
+import common.env.Constants;
+import common.tools.DataValidate;
+
 public final class Room {
 
     private String roomID;
@@ -9,7 +12,7 @@ public final class Room {
     private int capacity;
     private String furnitureDescription;
 
-    public Room(String roomID, String roomName, String roomType, double dailyRate, int capacity, String furnitureDescription) {
+    public Room(String roomID, String roomName, String roomType, double dailyRate, int capacity, String furnitureDescription) throws Exception {
         setRoomID(roomID);
         setRoomName(roomName);
         setRoomType(roomType);
@@ -54,11 +57,17 @@ public final class Room {
         this.roomType = roomType;
     }
 
-    public void setDailyRate(double dailyRate) {
+    public void setDailyRate(double dailyRate) throws Exception {
+        if (!DataValidate.checkStringWithFormat(String.valueOf(dailyRate), Constants.POSITIVE_NUMBER_PATTERN)) {
+            throw new Exception("Daily rate invalid.");
+        }
         this.dailyRate = dailyRate;
     }
 
-    public void setCapacity(int capacity) {
+    public void setCapacity(int capacity) throws Exception {
+        if (!DataValidate.checkStringWithFormat(String.valueOf(capacity), Constants.POSITIVE_NUMBER_PATTERN)) {
+            throw new Exception("Capacity invalid.");
+        }
         this.capacity = capacity;
     }
 
