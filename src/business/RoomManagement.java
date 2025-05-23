@@ -97,7 +97,7 @@ public class RoomManagement {
 
     public void printRoomList(List<Room> roomList) throws Exception {
         if (roomList.isEmpty()) {
-            System.out.println("Does not have any room information.");
+            System.out.println("Room list is currently empty, not loaded yet.");
             return;
         }
         System.out.println(String.join("", Collections.nCopies(115, "-")));

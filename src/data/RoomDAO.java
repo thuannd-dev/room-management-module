@@ -46,11 +46,17 @@ public class RoomDAO implements IRoom {
                 capacity = Integer.parseInt(roomS.get(4).trim());
                 furnitureDescription = roomS.get(5).trim();
 
+                // Check for duplicate room ID
+                boolean isDuplicate = getRoomById(roomID) != null;
+                if (isDuplicate) {
+                    throw new IllegalArgumentException("Duplicate room ID found: " + roomID);
+                }
+
                 Room room = new Room(roomID, roomName, roomType, dailyRate, capacity, furnitureDescription);
                 ROOM_LIST.add(room);
                 successCount++;
             } catch (Exception ex) {
-                System.err.println(ex.getMessage());
+                // System.err.println(ex.getMessage());
                 errorCount++;
             }
         }
@@ -75,7 +81,7 @@ public class RoomDAO implements IRoom {
     @Override
     public Room getRoomById(String id) throws Exception {
         if (ROOM_LIST.isEmpty()) {
-            getRooms();
+            getRooms();//return null
         }
         Room room = ROOM_LIST
                 .stream()
