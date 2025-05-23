@@ -102,16 +102,11 @@ public class RoomDAO implements IRoom {
                 ROOM_LIST.add(room);
                 successCount++;
             } catch (Exception ex) {
-                // System.err.println(ex.getMessage());
                 errorCount++;
             }
         }
 
-        if (ROOM_LIST.isEmpty()) {
-            throw new Exception("No valid room was loaded.");
-        }
-
-        System.out.println(successCount + " rooms successfully loaded");
+        System.out.println(successCount + " rooms successfully loaded.");
         System.out.println(errorCount + " entries failed.");
     }
 
