@@ -1,6 +1,7 @@
 package common.tools;
 
 import java.time.LocalDate;
+import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Scanner;
@@ -92,6 +93,22 @@ public class DataInput {
             }
         } while (stop);
         return date;
+    }
+
+    public static LocalDate getMonth(String displayMessage) throws Exception {
+        String strInput;
+        LocalDate month = null;
+        boolean stop;
+        do {
+            strInput = getString(displayMessage);
+            stop = !DataValidate.checkStringWithFormat(strInput, "^(0?[1-9]|1[0-2])\\/\\d{4}$");
+            if (stop) {
+                System.out.println("Please enter a valid month:");
+            } else {
+                month = YearMonth.parse(strInput, DateTimeFormatter.ofPattern("M/yyyy")).atDay(1);
+            }
+        } while (stop);
+        return month;
     }
 
     public static String getString(String displayMessage, List<String> pattern) {

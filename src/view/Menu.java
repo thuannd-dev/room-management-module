@@ -2,6 +2,7 @@ package view;
 
 import business.RoomManagement;
 import common.tools.DataInput;
+import core.interfaces.IGuest;
 import core.interfaces.IRoom;
 import java.util.Arrays;
 import java.util.List;
@@ -29,8 +30,8 @@ public class Menu {
         return number;
     }
 
-    public static void manageRoom(IRoom service) {
-        RoomManagement roomMenu = new RoomManagement(service);
+    public static void manageRoom(IRoom service, IGuest guestService) {
+        RoomManagement roomMenu = new RoomManagement(service, guestService);
         roomMenu.processMenu();
     }
 }

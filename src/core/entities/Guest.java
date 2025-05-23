@@ -149,10 +149,15 @@ public final class Guest {
     }
 
     public void setNameOfCoTenant(String nameOfCoTenant) throws Exception {
-        if (!nameOfCoTenant.isEmpty() || !DataValidate.checkStringWithFormat(nameOfCoTenant, Constants.GUEST_NAME_PATTERN)) {
+        if (nameOfCoTenant.isEmpty()) {
+            this.nameOfCoTenant = "";
+            return;
+        }
+        if (!DataValidate.checkStringWithFormat(nameOfCoTenant, Constants.GUEST_NAME_CO_TENANT_PATTERN)) {
             throw new Exception("Name of co-tenant invalid.");
         }
         this.nameOfCoTenant = DataUtils.toTitleCase(nameOfCoTenant);
+
     }
 
     @Override

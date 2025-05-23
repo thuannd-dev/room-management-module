@@ -14,6 +14,52 @@ public class RoomDAO implements IRoom {
 
     public RoomDAO(String fileName) throws Exception {
         this.FILE_MANAGER = new FileManager(fileName);
+        initData();
+    }
+
+    public final void initData() throws Exception {
+        String roomID, roomName, roomType, furnitureDescription;
+        double dailyRate;
+        int capacity;
+
+        ROOM_LIST.clear();
+        List<String> roomData = FILE_MANAGER.readDataFromFile();
+
+        if (roomData.isEmpty()) {
+            throw new Exception("File is empty");
+        }
+
+        for (int i = 0; i < roomData.size(); i++) {
+            String e = roomData.get(i);
+            try {
+                List<String> roomS = Arrays.asList(e.split(";"));
+                if (roomS.size() < 6) {
+                    throw new IllegalArgumentException("Missing field data.");
+                }
+
+                roomID = roomS.get(0).trim();
+                roomName = roomS.get(1).trim();
+                roomType = roomS.get(2).trim();
+                dailyRate = Double.parseDouble(roomS.get(3).trim());
+                capacity = Integer.parseInt(roomS.get(4).trim());
+                furnitureDescription = roomS.get(5).trim();
+
+                // Check for duplicate room ID
+                boolean isDuplicate = getRoomById(roomID) != null;
+                if (isDuplicate) {
+                    throw new IllegalArgumentException("Duplicate room ID found: " + roomID);
+                }
+
+                Room room = new Room(roomID, roomName, roomType, dailyRate, capacity, furnitureDescription);
+                ROOM_LIST.add(room);
+            } catch (Exception ex) {
+            }
+        }
+
+        if (ROOM_LIST.isEmpty()) {
+            throw new Exception("No valid room was loaded.");
+        }
+
     }
 
     @Override

@@ -36,12 +36,13 @@ public class GuestDAO implements IGuest {
                 desiredRoomID = fieldsOfGuest.get(5).trim();
                 numberOfRentalDays = Integer.parseInt(fieldsOfGuest.get(6).trim());
                 startDate = LocalDate.parse(fieldsOfGuest.get(7).trim(), DateTimeFormatter.ofPattern("dd/MM/yyyy"));
-                nameOfCoTenant = fieldsOfGuest.get(8).trim();
+                if (fieldsOfGuest.size() > 8) {
+                    nameOfCoTenant = fieldsOfGuest.get(8).trim();
+                } else {
+                    nameOfCoTenant = "";
+                }
                 Guest guest = new Guest(guestID, fullName, birthdate, gender, phoneNumber, desiredRoomID, numberOfRentalDays, startDate, nameOfCoTenant);
                 GUEST_LIST.add(guest);
-                if (GUEST_LIST.isEmpty()) {
-                    throw new Exception("Guest list is empty.");
-                }
             }
         } catch (Exception e) {
             throw new Exception(e.getMessage());
@@ -50,7 +51,7 @@ public class GuestDAO implements IGuest {
 
     @Override
     public List<Guest> getGuests() throws Exception {
-        GUEST_LIST.sort((e1, e2) -> e1.getFullName().compareToIgnoreCase(e2.getFullName()));
+        GUEST_LIST.sort((e1, e2) -> e1.getNationalID().compareToIgnoreCase(e2.getNationalID()));
         return GUEST_LIST;
     }
 
@@ -87,9 +88,13 @@ public class GuestDAO implements IGuest {
     @Override
     public void removeGuest(Guest guest) throws Exception {
         Guest gus = getGuestById(guest.getNationalID());
-        if (gus != null) {
-            GUEST_LIST.remove(gus);
+        if (gus == null) {
+            throw new Exception("Guest not found");
         }
+        if (gus.getStartDate().isBefore(LocalDate.now()) || gus.getStartDate().isEqual(LocalDate.now())) {
+            throw new Exception("The room booking for this guest cannot be cancelled");
+        }
+        GUEST_LIST.remove(gus);
     }
 
     @Override
