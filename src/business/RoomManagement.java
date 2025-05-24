@@ -7,20 +7,13 @@ import core.entities.Guest;
 import core.entities.Room;
 import core.interfaces.IGuest;
 import core.interfaces.IRoom;
-import java.text.DecimalFormat;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import view.Menu;
 
 public class RoomManagement {
-
-    private static final String SEPARATOR = String.join("", Collections.nCopies(115, "-"));
-    private static final DecimalFormat CURRENCY_FORMATTER = new DecimalFormat("#,###");
-    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-    private static final DateTimeFormatter MONTH_FORMATTER = DateTimeFormatter.ofPattern("MM/yyyy");
 
     private final IRoom roomDAO;
     private final IGuest guestDAO;
@@ -97,16 +90,16 @@ public class RoomManagement {
             System.out.println("Room list is currently empty, not loaded yet.");
             return;
         }
-        System.out.println(SEPARATOR);
+        System.out.println(Constants.SEPARATOR);
         System.out.format("%-6s | %-18s | %-10s | %-6s | %8s | %s%n",
                 "RoomID", "RoomName", "Type", "Rate", "Capacity", "Furniture");
-        System.out.println(SEPARATOR);
+        System.out.println(Constants.SEPARATOR);
         roomList.forEach(room -> System.out.format(
                 "%-6s | %-18s | %-10s | %6s | %8s | %s%n",
                 room.getRoomID(), room.getRoomName(), room.getRoomType(),
                 room.getDailyRate(), room.getCapacity(), room.getFurnitureDescription()
         ));
-        System.out.println(SEPARATOR);
+        System.out.println(Constants.SEPARATOR);
     }
 
     public boolean isRoomAvailable(String roomId, LocalDate startDate, int numberOfDays) throws Exception {
@@ -122,7 +115,7 @@ public class RoomManagement {
         LocalDate endDate = startDate.plusDays(numberOfDays - 1);
         return guestDAO.getGuests().stream()
                 .filter(guest -> guest.getDesiredRoomID().equalsIgnoreCase(roomId))
-                .filter(guest -> excludeGuestId == null || !guest.getNationalID().equals(excludeGuestId))
+                .filter(guest -> excludeGuestId == null || !guest.getNationalID().equalsIgnoreCase(excludeGuestId))
                 .noneMatch(guest -> {
                     LocalDate guestEndDate = guest.getStartDate().plusDays(guest.getNumberOfRentalDays() - 1);
                     return !(endDate.isBefore(guest.getStartDate()) || startDate.isAfter(guestEndDate));
@@ -160,27 +153,27 @@ public class RoomManagement {
     }
 
     public void printGuestInformationToUpdate(Guest guest) throws Exception {
-        System.out.println(SEPARATOR);
+        System.out.println(Constants.SEPARATOR);
         System.out.println("Guest information [National ID: " + guest.getNationalID() + "]");
-        System.out.println(SEPARATOR);
+        System.out.println(Constants.SEPARATOR);
         System.out.println("Full name        : " + guest.getFullName());
         System.out.println("Phone number     : " + guest.getPhoneNumber());
-        System.out.println("Birth day        : " + guest.getBirthdate().format(DATE_FORMATTER));
+        System.out.println("Birth day        : " + guest.getBirthdate().format(Constants.DATE_FORMATTER));
         System.out.println("Gender           : " + guest.getGender());
-        System.out.println(SEPARATOR);
+        System.out.println(Constants.SEPARATOR);
         System.out.println("Rental room      : " + guest.getDesiredRoomID());
-        System.out.println("Check in         : " + guest.getStartDate().format(DATE_FORMATTER));
+        System.out.println("Check in         : " + guest.getStartDate().format(Constants.DATE_FORMATTER));
         System.out.println("Rental days      : " + guest.getNumberOfRentalDays());
-        System.out.println("Check out        : " + guest.getStartDate().plusDays(guest.getNumberOfRentalDays()).format(DATE_FORMATTER));
+        System.out.println("Check out        : " + guest.getStartDate().plusDays(guest.getNumberOfRentalDays()).format(Constants.DATE_FORMATTER));
         System.out.println("Name of co-tenant: " + guest.getNameOfCoTenant());
-        System.out.println(SEPARATOR);
+        System.out.println(Constants.SEPARATOR);
     }
 
     public void updateGuestStayInformation() throws Exception {
         String guestID = DataInput.getString("Enter guest ID:", Constants.NATIONAL_ID_PATTERN);
         Guest guest = guestDAO.getGuestById(guestID);
         if (guest == null) {
-            System.out.println(SEPARATOR);
+            System.out.println(Constants.SEPARATOR);
             System.out.println("No guest found with the requested ID '" + guestID + "'");
             return;
         }
@@ -216,17 +209,6 @@ public class RoomManagement {
         System.out.println("Guest information updated successfully");
     }
 
-    public void searchGuestByNationalID() throws Exception {
-        String guestID = DataInput.getString("Enter guest ID:", Constants.NATIONAL_ID_PATTERN);
-        Guest guest = guestDAO.getGuestById(guestID);
-        if (guest == null) {
-            System.out.println(SEPARATOR);
-            System.out.println("No guest found with the requested ID '" + guestID + "'");
-            return;
-        }
-        printGuestInformation(guest);
-    }
-
     public void printGuestInformation(Guest guest) throws Exception {
         if (guest == null) {
             throw new Exception("Printing guest information failed");
@@ -236,39 +218,50 @@ public class RoomManagement {
         }
         Room room = roomDAO.getRoomById(guest.getDesiredRoomID());
 
-        System.out.println(SEPARATOR);
+        System.out.println(Constants.SEPARATOR);
         System.out.println("Guest information [National ID: " + guest.getNationalID() + "]");
-        System.out.println(SEPARATOR);
+        System.out.println(Constants.SEPARATOR);
         System.out.println("Full name    : " + guest.getFullName());
         System.out.println("Phone number : " + guest.getPhoneNumber());
-        System.out.println("Birth day    : " + guest.getBirthdate().format(DATE_FORMATTER));
+        System.out.println("Birth day    : " + guest.getBirthdate().format(Constants.DATE_FORMATTER));
         System.out.println("Gender       : " + guest.getGender());
-        System.out.println(SEPARATOR);
+        System.out.println(Constants.SEPARATOR);
         System.out.println("Rental room  : " + guest.getDesiredRoomID());
-        System.out.println("Check in     : " + guest.getStartDate().format(DATE_FORMATTER));
+        System.out.println("Check in     : " + guest.getStartDate().format(Constants.DATE_FORMATTER));
         System.out.println("Rental days  : " + guest.getNumberOfRentalDays());
-        System.out.println("Check out    : " + guest.getStartDate().plusDays(guest.getNumberOfRentalDays()).format(DATE_FORMATTER));
-        System.out.println(SEPARATOR);
+        System.out.println("Check out    : " + guest.getStartDate().plusDays(guest.getNumberOfRentalDays()).format(Constants.DATE_FORMATTER));
+        System.out.println(Constants.SEPARATOR);
         System.out.println("Room information:");
         System.out.println("+ ID       : " + room.getRoomID());
         System.out.println("+ Room     : " + room.getRoomName());
         System.out.println("+ Type     : " + room.getRoomType());
-        System.out.println("+ Daily rate: " + room.getDailyRate());
+        System.out.println("+ Daily rate: " + room.getDailyRate() + "$");
         System.out.println("+ Capacity : " + room.getCapacity());
         System.out.println("+ Furniture: " + room.getFurnitureDescription());
-        System.out.println(SEPARATOR);
+        System.out.println(Constants.SEPARATOR);
+    }
+
+    public void searchGuestByNationalID() throws Exception {
+        String guestID = DataInput.getString("Enter guest ID:", Constants.NATIONAL_ID_PATTERN);
+        Guest guest = guestDAO.getGuestById(guestID);
+        if (guest == null) {
+            System.out.println(Constants.SEPARATOR);
+            System.out.println("No guest found with the requested ID '" + guestID + "'");
+            return;
+        }
+        printGuestInformation(guest);
     }
 
     public void deleteGuestReservationBeforeArrival() throws Exception {
         String guestID = DataInput.getString("Enter guest ID:", Constants.NATIONAL_ID_PATTERN);
         Guest guest = guestDAO.getGuestById(guestID);
         if (guest == null) {
-            System.out.println(SEPARATOR);
+            System.out.println(Constants.SEPARATOR);
             System.out.println("Booking details for ID '" + guestID + "' could not be found.");
             return;
         }
         if (guest.getStartDate().isBefore(LocalDate.now()) || guest.getStartDate().isEqual(LocalDate.now())) {
-            System.out.println(SEPARATOR);
+            System.out.println(Constants.SEPARATOR);
             System.out.println("The room booking for this guest cannot be cancelled!");
             return;
         }
@@ -277,6 +270,7 @@ public class RoomManagement {
                 + guestID + "'? (Y/N):", Constants.CONFIRM_PATTERN);
         if (confirm.equalsIgnoreCase("Y")) {
             guestDAO.removeGuest(guest);
+            System.out.println("... System message ...");
             System.out.println("Booking details for ID '" + guestID + "' have been successfully cancelled.");
         } else {
             System.out.println("Cancelled request");
@@ -307,6 +301,51 @@ public class RoomManagement {
         }
     }
 
+    public double calculateMonthlyRevenueOfRoom(Room room, LocalDate month) throws Exception {
+        return guestDAO.getGuests().stream()
+                .filter(guest -> guest.getDesiredRoomID().equalsIgnoreCase(room.getRoomID())
+                && guest.getStartDate().getMonth().equals(month.getMonth())
+                && guest.getStartDate().getYear() == month.getYear())
+                .mapToDouble(guest -> guest.getNumberOfRentalDays() * room.getDailyRate())
+                .sum();
+    }
+
+    public void printMonthlyRevenueReport() throws Exception {
+        LocalDate month = DataInput.getMonth("Enter month (mm/yyyy):");
+        List<Room> roomList = roomDAO.getRooms();
+        List<Room> monthlyRevenueRoomList = roomList.stream()
+                .filter(room -> {
+                    try {
+                        return calculateMonthlyRevenueOfRoom(room, month) > 0;
+                    } catch (Exception e) {
+                        return false;
+                    }
+                })
+                .collect(Collectors.toList());
+
+        if (monthlyRevenueRoomList.isEmpty()) {
+            System.out.println("There is no data on guests who have rented rooms");
+            return;
+        }
+
+        System.out.format("Monthly Revenue Report - %s%n", month.format(Constants.MONTH_FORMATTER));
+        System.out.println(String.join("", Collections.nCopies(68, "-")));
+        System.out.format("  %-6s | %-15s | %-10s | %10s | %10s%n",
+                "RoomID", "Room Name", "Room type", "DailyRate", "Amount");
+        System.out.println(String.join("", Collections.nCopies(68, "-")));
+
+        monthlyRevenueRoomList.forEach(room -> {
+            try {
+                System.out.format("  %-6s | %-15s | %-10s | %10s | %10s%n",
+                        room.getRoomID(), room.getRoomName(), room.getRoomType(),
+                        room.getDailyRate(), calculateMonthlyRevenueOfRoom(room, month));
+            } catch (Exception e) {
+                // Handle exception silently
+            }
+        });
+        System.out.println(String.join("", Collections.nCopies(68, "-")));
+    }
+
     public double calculateTotalRevenueOfRoomType(String roomType) throws Exception {
         return guestDAO.getGuests().stream()
                 .filter(guest -> {
@@ -328,15 +367,6 @@ public class RoomManagement {
                 .sum();
     }
 
-    public double calculateMonthlyRevenueOfRoom(Room room, LocalDate month) throws Exception {
-        return guestDAO.getGuests().stream()
-                .filter(guest -> guest.getDesiredRoomID().equalsIgnoreCase(room.getRoomID())
-                && guest.getStartDate().getMonth().equals(month.getMonth())
-                && guest.getStartDate().getYear() == month.getYear())
-                .mapToDouble(guest -> guest.getNumberOfRentalDays() * room.getDailyRate())
-                .sum();
-    }
-
     public void printRevenueReportByRoomType() throws Exception {
         String roomType = DataInput.getString("Enter room type:", Constants.ROOM_TYPE_PATTERN);
         roomType = DataUtils.toTitleCase(roomType);
@@ -346,44 +376,8 @@ public class RoomManagement {
         System.out.println(String.join("", Collections.nCopies(40, "-")));
         System.out.format("  %-15s | %12s%n", "Room type", "Amount");
         System.out.println(String.join("", Collections.nCopies(40, "-")));
-        System.out.format("  %-15s | %15s%n", roomType, "$" + CURRENCY_FORMATTER.format(totalRevenue));
+        System.out.format("  %-15s | %15s%n", roomType, "$" + Constants.CURRENCY_FORMATTER.format(totalRevenue));
         System.out.println(String.join("", Collections.nCopies(40, "-")));
-    }
-
-    public void printMonthlyRevenueReport() throws Exception {
-        LocalDate month = DataInput.getMonth("Enter month (mm/yyyy):");
-        List<Room> roomList = roomDAO.getRooms();
-        List<Room> monthlyRevenueRoomList = roomList.stream()
-                .filter(room -> {
-                    try {
-                        return calculateMonthlyRevenueOfRoom(room, month) > 0;
-                    } catch (Exception e) {
-                        return false;
-                    }
-                })
-                .collect(Collectors.toList());
-
-        if (monthlyRevenueRoomList.isEmpty()) {
-            System.out.println("There is no data on guests who have rented rooms");
-            return;
-        }
-
-        System.out.format("Monthly Revenue Report - %s%n", month.format(MONTH_FORMATTER));
-        System.out.println(String.join("", Collections.nCopies(68, "-")));
-        System.out.format("  %-6s | %-15s | %-10s | %10s | %10s%n",
-                "RoomID", "Room Name", "Room type", "DailyRate", "Amount");
-        System.out.println(String.join("", Collections.nCopies(68, "-")));
-
-        monthlyRevenueRoomList.forEach(room -> {
-            try {
-                System.out.format("  %-6s | %-15s | %-10s | %10s | %10s%n",
-                        room.getRoomID(), room.getRoomName(), room.getRoomType(),
-                        room.getDailyRate(), calculateMonthlyRevenueOfRoom(room, month));
-            } catch (Exception e) {
-                // Handle exception silently
-            }
-        });
-        System.out.println(String.join("", Collections.nCopies(68, "-")));
     }
 
     public void saveGuestInformation() throws Exception {
@@ -392,7 +386,7 @@ public class RoomManagement {
     }
 
     private void handleExit() throws Exception {
-        String confirm = DataInput.getString("Do you want to save changes before exiting? (Y/N): ").toUpperCase();
+        String confirm = DataInput.getString("Do you want to save changes before exiting? (Y/N): ", Constants.CONFIRM_PATTERN);
         if (confirm.equalsIgnoreCase("Y")) {
             saveGuestInformation();
         }

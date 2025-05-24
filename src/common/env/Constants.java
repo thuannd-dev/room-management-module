@@ -1,6 +1,9 @@
 package common.env;
 
+import java.text.DecimalFormat;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class Constants {
@@ -19,5 +22,9 @@ public class Constants {
     public static final String CONFIRM_PATTERN = "(?i)^(y|n)$";
     public static final String ACTIVE_ROOM_FILE = "./src/files/Active_Room_List.txt";
     public static final String GUEST_FILE = "./src/files/Guest_List.txt";
+    public static final String SEPARATOR = String.join("", Collections.nCopies(115, "-"));
+    public static final DecimalFormat CURRENCY_FORMATTER = new DecimalFormat("#,###");
+    public static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+    public static final DateTimeFormatter MONTH_FORMATTER = DateTimeFormatter.ofPattern("MM/yyyy");
     public static final List<String> FEAST_CODE_LIST = new ArrayList<>();
 }
