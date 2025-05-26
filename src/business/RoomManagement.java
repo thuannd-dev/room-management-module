@@ -37,7 +37,9 @@ public class RoomManagement {
                         + "|8.Monthly Revenue Report"
                         + "|9.Revenue Report by Room Type"
                         + "|10.Save Guest Information"
-                        + "|11.Exit |Select:");
+                        + "|11.Revenue Report Details by Room Type"
+                        + "|12.Exit|Select:"
+                );
                 int choice = Menu.getUserChoice();
                 switch (choice) {
                     case 1 ->
@@ -61,6 +63,10 @@ public class RoomManagement {
                     case 10 ->
                         saveGuestInformation();
                     case 11 ->
+                        //This is new feature code 1-1 with lecture Kiemhh
+                        //them chức năng show doanh số theo loại phòng có in danh sách chi tiết các phòng và tổng tiền của từng loại phòng
+                        printTotalRevenueDetailsByRoomType();
+                    case 12 ->
                         handleExit();
                     default ->
                         System.out.println("This function is not available");
@@ -378,6 +384,38 @@ public class RoomManagement {
         System.out.println(String.join("", Collections.nCopies(40, "-")));
         System.out.format("  %-15s | %15s%n", roomType, "$" + Constants.CURRENCY_FORMATTER.format(totalRevenue));
         System.out.println(String.join("", Collections.nCopies(40, "-")));
+    }
+
+    public void printTotalRevenueDetailsByRoomType() throws Exception {
+        String roomTypeRequest = DataInput.getString("Enter room type:", Constants.ROOM_TYPE_PATTERN);
+        List<Room> rooms = roomDAO.getRooms().stream()
+                .filter(room -> room.getRoomType().equalsIgnoreCase(roomTypeRequest))
+                .collect(Collectors.toList());
+        if (rooms.isEmpty()) {
+            System.out.println("No rooms found for the specified room type.");
+            return;
+        }
+
+        System.out.format("     Revenue Report Details By Room Type - %s\n", roomTypeRequest.toUpperCase());
+        System.out.println(String.join("", Collections.nCopies(60, "-")));
+        System.out.format("  %-6s | %-20s | %-10s | %10s%n", "RoomID", "Room Name", "Daily Rate", "Amount");
+        System.out.println(String.join("", Collections.nCopies(60, "-")));
+
+        for (Room room : rooms) {
+            double revenue = room.getDailyRate() * guestDAO.getGuests().stream()
+                    .filter(guest -> guest.getDesiredRoomID().equalsIgnoreCase(room.getRoomID()))
+                    .mapToDouble(Guest::getNumberOfRentalDays)
+                    .sum();
+            // totalRevenue += revenue;
+            System.out.format("  %-6s | %-20s | %10s | %10s%n",
+                    room.getRoomID(), room.getRoomName(), room.getDailyRate(), revenue);
+        }
+        System.out.println(String.join("", Collections.nCopies(60, "-")));
+        double totalRevenue = calculateTotalRevenueOfRoomType(roomTypeRequest);
+        System.out.format("  Total revenue for room type '%s': %s%n",
+                roomTypeRequest.toUpperCase(), Constants.CURRENCY_FORMATTER.format(totalRevenue) + "$");
+        System.out.println(String.join("", Collections.nCopies(60, "-")));
+
     }
 
     public void saveGuestInformation() throws Exception {
